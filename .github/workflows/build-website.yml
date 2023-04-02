@@ -1,0 +1,16 @@
+# Sample workflow for building and deploying a Jekyll site to GitHub Pages
+name: Test Building Website
+
+on: [workflow_dispatch]
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Build with 11ty
+        run: npm install && npm run build
