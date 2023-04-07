@@ -57,7 +57,7 @@ npm_data=# select count(*) from packages;
 (1 row)
 ```
 
-If this all works, then you are ready to start developing your own queries on the dataset. See below to understand the structure of the tables in the database.
+If this all works, then you are ready to start developing your own NPM package metadata queries. See below to understand the structure of the tables in the database.
 
 ### Database Schema Documentation
 
