@@ -41,8 +41,6 @@ Additionally, you may need to pass various connection options (port, etc.) to `p
 
 The `pg_restore` command may take up to around an hour or more, depending on hardware.
 
-### Connecting to the Database and Issuing Queries
-
 Once `pg_restore` completes, you can then connect to the database using `psql npm_data`, or any other SQL tool. 
 To test that the import was successful, try to count the number of packages. 
 It should look something like this:
@@ -58,6 +56,8 @@ npm_data=# select count(*) from packages;
  2905313
 (1 row)
 ```
+
+If this all works, then you can can start developing whatever queries interest you on the dataset. See below to understand the structure of the tables in the database.
 
 ### Database Schema Documentation
 
