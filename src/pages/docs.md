@@ -57,7 +57,7 @@ npm_data=# select count(*) from packages;
 (1 row)
 ```
 
-If this all works, then you can can start developing whatever queries interest you on the dataset. See below to understand the structure of the tables in the database.
+If this all works, then you are ready to start developing your own queries on the dataset. See below to understand the structure of the tables in the database.
 
 ### Database Schema Documentation
 
