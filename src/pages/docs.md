@@ -47,7 +47,7 @@ Once `pg_restore` completes, you can then connect to the database using `psql np
 To test that the import was successful, try to count the number of packages. 
 It should look something like this:
 
-```
+```sql
 $ psql npm_data
 psql (15.2 (Homebrew))
 Type "help" for help.
