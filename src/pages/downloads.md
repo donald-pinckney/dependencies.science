@@ -9,8 +9,10 @@ hideDescription: true
 
 Download the [latest snapshot of the metadata database](https://downloads.dependencies.science/metadata/latest.tar), or see a [list of the most recent snapshots](https://downloads.dependencies.science/metadata/).
 
-After downloading the database, please see the [documentation](/docs) for how to import this to PostgreSQL, and more information on the database schema.
+After downloading the database, please see the [documentation](/docs/#metadata-of-the-npm-ecosystem) for how to import this to PostgreSQL, and more information on the database schema.
 
 ### NPM Package Code (~20 TB)
 
-&#128679; &#128679; &#128679; Under construction &#128679; &#128679; &#128679; 
+The full source code of all scraped packages is hosted on [HuggingFace](https://huggingface.co/datasets/nuprl/npm-follower-data).
+
+To correctly download the dataset, verify downloaded files, and prepare the dataset for loading, please follow the instructions in the [documentation](/docs/#source-code-of-npm-packages) rather than downloading it directly from HuggingFace.

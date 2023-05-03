@@ -4,6 +4,8 @@ description: "Documentation on how to download and use dependencies.science data
 sortOrder: 2
 ---
 
+## Metadata of the NPM Ecosystem
+
 ### Requirements
 
 **Disk Space:** Currently (April 2023), 200 GB is sufficient space for downloading the metadata dataset and importing it to PostgreSQL. Running PostgreSQL on SSD storage probably provides a substantial speed up. 
@@ -116,6 +118,149 @@ The `downloaded_tarballs` table lists all the URLs and storage information of ta
 
 To see an example, run `select * from downloaded_tarballs limit(1)`.
 
-### Using the NPM Tarball Dataset
 
-&#128679; &#128679; &#128679; Under construction &#128679; &#128679; &#128679; 
+## Source Code of NPM Packages
+
+### Requirements
+
+**Disk Space:** Currently (April 2023), **over 20 TB** of disk space is needed to download and use the source code dataset. Please ensure that you have sufficient space first.
+
+**Metadata Database:** In order to make meaningful use of the source code dataset, you must also have the [metadata database setup](/docs/#metadata-of-the-npm-ecosystem). 
+
+**Rust:** You may install Rust via [rustup](https://rustup.rs). Version 1.66.0 or newer should work.
+
+**Python:** Our code has been tested with Python 3.8.1, other versions may work as well.
+
+**Redis:** Download Redis using your favorite package manager. For instance, if using snap: `sudo snap install redis`.
+
+### Part 1: Downloading the Blob Store
+
+1. Clone the `npm-follower` repository, and change to the directory with dataset downloading scripts: 
+```bash
+git clone https://github.com/donald-pinckney/npm-follower.git
+cd npm-follower/database_exporting
+```
+
+2. Install Python requirements:
+```bash
+# Could be pip3 depending on your system.
+# If you have conflicting installations, or if you prefer, feel free to use a Pip virtual environment.
+pip install -r download_tarballs_requirements.txt
+```
+
+3. Download the contents of the HuggingFace repo:
+```bash
+# Could be python3 depending on your system.
+python hf_download_repo.py /PATH/TO/DATASET/DIRECTORY
+```
+This will proceed to download the entire 20+ TB over the network, and after that verify the contents of all files, and redownload any incorrect files.
+Needless to say, this will take quite a while. If you run into issues, please don't hesitate to contact us directly via email ([donald_pinckney@icloud.com](mailto:donald_pinckney@icloud.com)) and/or by [filling an issue](https://github.com/donald-pinckney/npm-follower/issues).
+
+4. The dataset is split into pieces so that each file is under 50 GB. You now must restore the dataset:
+```bash
+python restore.py /PATH/TO/DATASET/DIRECTORY
+```  
+
+You should now have 1000 blob files in the `/PATH/TO/DATASET/DIRECTORY` directory.
+
+### Part 2: Setting up Redis
+
+1. Locate your Redis data directory: If you are unsure where you Redis data directory is, you may check with `redis-cli config get dir`. To do so you may need to start Redis, e.g.: `sudo systemctl start redis-server.service`.
+   
+2. Stop Redis, e.g.: `sudo systemctl stop redis-server.service`.
+
+3. Unpack the Redis dump: the downloaded dump of the metadata database (downloaded in [the previous section](/docs/#metadata-of-the-npm-ecosystem)) includes a dump of a Redis database as well, named `db_export/redis.zip`. You now need to unpack it to your Redis data directory:
+```bash
+# ***NOTE***: If different, use the path to your 
+# Redis data directory in place of /var/lib/redis
+
+sudo su
+mv db_export/redis.zip /var/lib/redis
+cd /var/lib/redis
+unzip redis.zip # WARNING: THIS WILL OVERWRITE YOUR CURRENT REDIS DATA
+chown -R redis:redis .
+rm redis.zip
+```
+
+4. Modify the Redis configuration file (typically `/etc/redis/redis.conf`) as follows:
+```text
+appendonly yes
+appendfilename "appendonly.aof"
+appenddirname "appendonlydir"
+```
+
+5. Start Redis: To start Redis and enable it to automatically run at startup, run:
+```bash
+sudo systemctl enable --now redis-server.service
+```
+
+The Redis server with the blob metastore should be running at on the Redis database number `4`,
+at the URL: `redis://127.0.0.1/4`
+
+
+### Part 3: Setting up Blob Store Server
+
+The blob store server implements an HTTP API for retrieving and managing file metadata in the
+blob filesystem. 
+
+1. Change directory to where you cloned the `npm-follower` repo: `cd /path/to/npm-follower/`
+2. Modify `.env` with the following settings:
+
+```text
+BLOB_REDIS_URL=redis://127.0.0.1/4
+BLOB_API_URL=http://127.0.0.1
+BLOB_STORAGE_DIR=/PATH/TO/DATASET/DIRECTORY
+```
+
+- `BLOB_REDIS_URL`: This is the endpoint for your Redis database, including the database number (`4`).
+- `BLOB_API_URL`: This is the URL of the blob store server. The blob store client will connect at this URL.
+- `BLOB_STORAGE_DIR`: This is the directory where you downloaded the blob store to in [Part 1](/docs/#part-1-downloading-the-blob-store).
+
+3. Modify `.secret.env` (create it if it doesn't exist) with the following setting:
+
+```text
+BLOB_API_KEY=put_a_secret_key_here
+```
+
+- `BLOB_API_KEY`: This is an API key for communicating with the blob store server. This can be useful if the blob store server is not located on the same machine hosting the underlying blob files, and therefore the HTTP API endpoint needs to be exposed to the public. You may choose any key you want.
+
+4. Run the Blob Store Server:
+```bash
+cargo run --release --bin blob_idx_server -- 0 0
+```
+
+The server has capabilities for running distributed jobs across multiple machines in
+a slurm cluster. The first two arguments correspond to the number of file-transfer workers and
+compute workers. In this case, we are running the server on a single machine in order
+to retrieve data from the blob store, so we set both of these arguments to `0`.
+
+
+### Part 4: Reading From the Dataset
+
+To perform operations on the blob store, the client is used. For this example, we will be using the
+`cp` command to copy a file from the blob store to the local machine.
+
+For example, to retrieve the tarball with key `4.17.1.tgz`, run:
+
+```bash
+cargo run --release --bin blob_idx_client -- cp 4.17.1.tgz ./express-4.17.1.tgz
+```
+
+The client will automatically connect to the filesystem server at the URL specified in the `.env` file,
+and retrieve the tarball with key `4.17.1.tgz` and store it at `./express-4.17.1.tgz`. From there you can extract it as a normal tarball.
+
+### Part 5: Using the Source Code Dataset
+
+To know what tarball key to use when reading from the blob store, you **must** look up the appropriate key in the `downloaded_tarballs` table in the PostgreSQL metadata database. For example, to find the key for the tarball downloaded from the URL `https://registry.npmjs.org/express/-/express-4.17.1.tgz`, you can query:
+
+```sql
+npm_data=> select blob_storage_key from downloaded_tarballs where 
+tarball_url = 'https://registry.npmjs.org/express/-/express-4.17.1.tgz';
+
+  blob_storage_key
+--------------------
+ express-4.17.1.tgz
+```
+
+In turn, the tarball URLs can be lookedup in the `versions` table.
+You **can not** rely on blob store keys always having the format of `name-x.y.z.tgz`.
