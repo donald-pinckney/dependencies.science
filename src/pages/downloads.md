@@ -9,7 +9,7 @@ hideDescription: true
 
 Download the [latest snapshot of the metadata database](https://downloads.dependencies.science/metadata/latest.tar), or see a [list of the most recent snapshots](https://downloads.dependencies.science/metadata/).
 
-After downloading the database, please see the [documentation](/setup/#metadata-of-the-npm-ecosystem) for how to import this to PostgreSQL, and more information on the database schema.
+After downloading the database, please see the [documentation](/setup/#metadata-db-of-npm-packages) for how to import this to PostgreSQL, and more information on the database schema.
 
 ### NPM Package Code (~20 TB)
 

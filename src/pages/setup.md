@@ -59,7 +59,7 @@ npm_data=# select count(*) from packages;
 (1 row)
 ```
 
-If this all works, then you are ready to start developing your own NPM package metadata queries. See [the documentation](/docs/#metadata-of-the-npm-ecosystem) to understand the structure of the tables in the database.
+If this all works, then you are ready to start developing your own NPM package metadata queries. See [the documentation](/docs/#metadata-db-of-npm-packages) to understand the structure of the tables in the database.
 
 
 ## Source Code of NPM Packages
@@ -68,7 +68,7 @@ If this all works, then you are ready to start developing your own NPM package m
 
 **Disk Space:** Currently (April 2023), **over 20 TB** of disk space is needed to download and use the source code dataset. Please ensure that you have sufficient space first.
 
-**Metadata Database:** In order to make meaningful use of the source code dataset, you must also have the [metadata database setup](/docs/#metadata-of-the-npm-ecosystem). 
+**Metadata Database:** In order to make meaningful use of the source code dataset, you must also have the [metadata database setup](/setup/#metadata-db-of-npm-packages). 
 
 **Rust:** You may install Rust via [rustup](https://rustup.rs). Version 1.66.0 or newer should work.
 
@@ -113,7 +113,7 @@ You should now have 1000 blob files in the `/PATH/TO/DATASET/DIRECTORY` director
    
 2. Stop Redis, e.g.: `sudo systemctl stop redis-server.service`.
 
-3. Unpack the Redis dump: the downloaded dump of the metadata database (downloaded in [the previous section](/docs/#metadata-of-the-npm-ecosystem)) includes a dump of a Redis database as well, named `db_export/redis.zip`. You now need to unpack it to your Redis data directory:
+3. Unpack the Redis dump: the downloaded dump of the metadata database (downloaded in [the previous section](/setup/#metadata-db-of-npm-packages)) includes a dump of a Redis database as well, named `db_export/redis.zip`. You now need to unpack it to your Redis data directory:
 ```bash
 # ***NOTE***: If different, use the path to your 
 # Redis data directory in place of /var/lib/redis
@@ -158,7 +158,7 @@ BLOB_STORAGE_DIR=/PATH/TO/DATASET/DIRECTORY
 
 - `BLOB_REDIS_URL`: This is the endpoint for your Redis database, including the database number (`4`).
 - `BLOB_API_URL`: This is the URL of the blob store server. The blob store client will connect at this URL.
-- `BLOB_STORAGE_DIR`: This is the directory where you downloaded the blob store to in [Part 1](/docs/#part-1-downloading-the-blob-store).
+- `BLOB_STORAGE_DIR`: This is the directory where you downloaded the blob store to in [Part 1](/setup/#part-1-downloading-the-blob-store).
 
 3. Modify `.secret.env` (create it if it doesn't exist) with the following setting:
 
@@ -178,4 +178,4 @@ a slurm cluster. The first two arguments correspond to the number of file-transf
 compute workers. In this case, we are running the server on a single machine in order
 to retrieve data from the blob store, so we set both of these arguments to `0`.
 
-Everything is now fully setup! Please see [the documentation](/docs/#metadata-of-the-npm-ecosystem) to learn how to read data from the blob store.
+Everything is now fully setup! Please see [the documentation](/docs/#source-code-of-npm-packages) to learn how to read data from the blob store.

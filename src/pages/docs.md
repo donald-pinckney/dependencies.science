@@ -4,12 +4,12 @@ description: "Documentation on the structure of dependencies.science data"
 sortOrder: 3
 ---
 
-## Metadata of the NPM Ecosystem
+## Metadata DB of NPM Packages
 
 Below are the main aspects of the structure of the NPM package metadata PostgreSQL database. 
 Full details of the database structure can be found among [the migration files on GitHub](https://github.com/donald-pinckney/npm-follower/tree/main/postgres_db/migrations).
 
-If you do not yet have the metadata database setup, please follow [the setup instructions](/setup/#how-to-setup-package-metadata-db).
+If you do not yet have the metadata database setup, please follow [the setup instructions](/setup/#metadata-db-of-npm-packages).
 
 ### Packages (`packages`)
 
@@ -68,23 +68,12 @@ To see an example, run `select * from downloaded_tarballs limit(1)`.
 
 If you do not yet have the package source code blob store setup, please follow [the setup instructions](/setup/#source-code-of-npm-packages).
 
-### Running the Blob Storage Client
+### Blob Store is a Key-Value Store
 
-To perform operations on the blob store, the client is used. For this example, we will be using the
-`cp` command to copy a file from the blob store to the local machine.
+The blob store of package source code is a key-value store, where each value is a tarball of the source code of a version of a package. 
 
-For example, to retrieve the tarball with key `express-4.17.1.tgz`, run:
-
-```bash
-cargo run --release --bin blob_idx_client -- cp express-4.17.1.tgz ./express-4.17.1.tgz
-```
-
-The client will automatically connect to the filesystem server at the URL specified in the `.env` file,
-and retrieve the tarball with key `express-4.17.1.tgz` and store it at `./express-4.17.1.tgz`. From there you can extract it as a normal tarball.
-
-### Part 5: Using the Source Code Dataset
-
-To know what tarball key to use when reading from the blob store, you **must** look up the appropriate key in the `downloaded_tarballs` table in the PostgreSQL metadata database. For example, to find the key for the tarball downloaded from the URL `https://registry.npmjs.org/express/-/express-4.17.1.tgz`, you can query:
+To know which keys to read from in the blob store, you **must** look up the appropriate keys in the `downloaded_tarballs` table in the PostgreSQL metadata database. 
+For example, to find the key for the tarball downloaded from the URL `https://registry.npmjs.org/express/-/express-4.17.1.tgz`, you can query:
 
 ```sql
 npm_data=> select blob_storage_key from downloaded_tarballs where 
@@ -95,5 +84,21 @@ tarball_url = 'https://registry.npmjs.org/express/-/express-4.17.1.tgz';
  express-4.17.1.tgz
 ```
 
+This tells you that you can read from the `express-4.17.1.tgz` key in the blob store.
 In turn, the tarball URLs can be looked up in the `versions` table.
 You **can not** rely on blob store keys always having the format of `name-x.y.z.tgz`.
+
+
+### Reading from the Blob Store
+
+To perform operations on the blob store, the blob store client is used. For this example, we will be using the
+`cp` command to copy a file from the blob store to the local machine.
+
+For example, to retrieve the tarball with key `express-4.17.1.tgz`, run:
+
+```bash
+cargo run --release --bin blob_idx_client -- cp express-4.17.1.tgz ./express-4.17.1.tgz
+```
+
+The client will automatically connect to the blob store server at the URL specified in the `.env` file,
+and retrieve the tarball with key `express-4.17.1.tgz` and store it at `./express-4.17.1.tgz`. From there you can extract it as a normal tarball.
