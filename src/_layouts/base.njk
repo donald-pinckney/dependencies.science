@@ -46,6 +46,8 @@
       title="RSS Feed for {{ meta.siteName }}"
       href="/feed/"
     />
+
+    <script src="https://kit.fontawesome.com/34f032b75c.js" crossorigin="anonymous"></script>
   </head>
   <body>
     {{ content | safe }}
@@ -53,7 +55,7 @@
     <footer class="tdbc-background--secondary">
       <div class="tdbc-container tdbc-text-align-center">
         <div class="tdbc-row tdbc-ink--light tdbc-mx-auto">
-          <p class="tdbc-mb-none">{{ meta.siteName }} &#8226; Made by <a href="https://donaldpinckney.com" style="color: #fff">Donald Pinckney</a>, <a href="https://federico.codes" style="color: #fff">Federico Cassano</a>, <a href="https://ccs.neu.edu/~arjunguha/main/home/" style="color: #fff">Arjun Guha</a>, and <a href="https://www.jonbell.net" style="color: #fff">Jon Bell</a></p>
+          <p class="tdbc-mb-none">{{ meta.siteName }} &#8226; <a href="{{ meta.githubRepo }}" style="color: #fff"><i class="fa-brands fa-github"></i></a> &#8226; Made by <a href="https://donaldpinckney.com" style="color: #fff">Donald Pinckney</a>, <a href="https://federico.codes" style="color: #fff">Federico Cassano</a>, <a href="https://ccs.neu.edu/~arjunguha/main/home/" style="color: #fff">Arjun Guha</a>, and <a href="https://www.jonbell.net" style="color: #fff">Jon Bell</a></p>
           {% if meta.twitterUsername %}
             <span class="tdbc-row tdbc-row--center-content">
               <a

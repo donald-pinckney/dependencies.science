@@ -4,5 +4,7 @@ module.exports = {
   siteDescription:
     "Datasets collected from the NPM package registry of complete dependency and code data. Designed to support easy data analysis of the NPM ecosystem",
   authorName: "Donald Pinckney, Federico Cassano, Arjun Guha, Jon Bell",
+  contactEmail: "donald_pinckney@icloud.com",
+  githubRepo: "https://github.com/donald-pinckney/npm-follower"
   // twitterUsername: "TODO", // no `@`
 };

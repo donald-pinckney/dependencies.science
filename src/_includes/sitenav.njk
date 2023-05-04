@@ -10,7 +10,8 @@
       <li>
         <a
           {% if currentUrl === link.url %}aria-current="page"{% endif %}
-          href="{{ link.url }}">
+          href="{{ link.url }}"
+          style="padding-left: 4pt">
             {{ link.data.title }}
         </a>
       </li>
