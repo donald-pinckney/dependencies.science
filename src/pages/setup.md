@@ -94,13 +94,14 @@ pip install -r download_tarballs_requirements.txt
 3. Download the contents of the HuggingFace repo:
 ```bash
 # Could be python3 depending on your system.
-python hf_download_repo.py /PATH/TO/DATASET/DIRECTORY
+python hf_download_and_verify.py /PATH/TO/DATASET/DIRECTORY
 ```
 This will proceed to download the entire 20+ TB over the network, and after that verify the contents of all files, and redownload any incorrect files.
+You **must** run the above command *multiple times* until it outputs `Re-downloading 0 files`, otherwise you will likely receive some corrupted files.
 Needless to say, this will take quite a while. 
 <!-- If you run into issues, please don't hesitate to contact us directly via email ([donald_pinckney@icloud.com](mailto:donald_pinckney@icloud.com)) and/or by [filling an issue](https://github.com/donald-pinckney/npm-follower/issues). -->
 
-4. The dataset is split into pieces so that each file is under 50 GB. You now must restore the dataset:
+1. The dataset is split into pieces so that each file is under 50 GB. You now must restore the dataset:
 ```bash
 python restore.py /PATH/TO/DATASET/DIRECTORY
 ```  
