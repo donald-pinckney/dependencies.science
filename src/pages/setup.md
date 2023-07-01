@@ -101,7 +101,7 @@ You **must** run the above command *multiple times* until it outputs `Re-downloa
 Needless to say, this will take quite a while. 
 <!-- If you run into issues, please don't hesitate to contact us directly via email ([donald_pinckney@icloud.com](mailto:donald_pinckney@icloud.com)) and/or by [filling an issue](https://github.com/donald-pinckney/npm-follower/issues). -->
 
-1. The dataset is split into pieces so that each file is under 50 GB. You now must restore the dataset:
+4. The dataset is split into pieces so that each file is under 50 GB. You now must restore the dataset:
 ```bash
 python restore.py /PATH/TO/DATASET/DIRECTORY
 ```  
